@@ -1,0 +1,121 @@
+<html>
+    <head>
+        <title></title>
+        <script type="text/javascript">
+            let steps = [];
+            let currentStep = 0;
+            let numberOfSteps = 18;
+            let livesLeft = 16;
+            let numberOfLives = 16;
+
+            function init() {
+                document.getElementById("steps").innerHTML = "";
+
+                document.getElementById("button-init").setAttribute("style", "display: none;");
+                document.getElementById("button-left").setAttribute("style", "display: inline-block;");
+                document.getElementById("button-right").setAttribute("style", "display: inline-block;");
+                document.getElementById("status").setAttribute("style", "display: inline-block;");
+
+                document.getElementById("steps").innerHTML += '<div id="step-end" class="step"><span id="plate-end" class="plate"></span></div>';
+                for (i = numberOfSteps; i > 0; i--) {
+                    steps.push( getRandomInt() == 0 ? "left" : "right" );
+                    document.getElementById("steps").innerHTML += '<div id="step-' + i + '" class="step"><span id="plate-' + i + '-left" class="plate plate-left"></span><span id="plate-' + i + '-right" class="plate plate-right"></span></div>';
+                }
+                document.getElementById("steps").innerHTML += '<div id="step-start" class="step"><span id="plate-start" class="plate current-position"></span></div>';
+
+                currentStep = 0;
+                updateLives(livesLeft = numberOfLives);
+            }
+
+            function updateLives(lives) {
+                document.getElementById("lives").innerHTML = lives;
+
+                if (lives == 0) {
+                    end();
+                }
+            }
+
+            function progress( direction ) {
+                document.getElementsByClassName("current-position")[0].classList.remove("current-position");
+
+                if ( steps[currentStep++] == direction ) {
+                    if (currentStep == numberOfSteps) {
+                        end( true )
+                    } else {
+                        document.getElementById("plate-" + currentStep + "-" + direction).classList.add("current-position");
+                    }
+                } else {
+                    document.getElementById("plate-" + currentStep + "-" + direction).classList.add("broken");
+                    document.getElementById("plate-start").classList.add("current-position");
+                    currentStep = 0;
+                    updateLives(--livesLeft);
+                }
+            }
+
+            function end( win = false ) {
+                if ( win ) {
+                    document.getElementById("plate-end").classList.add("current-position");
+                    alert("You win!")
+                } else {
+                    document.getElementById("plate-start").classList.remove("current-position");
+                    alert("You lose!")
+                }
+
+                document.getElementById("button-init").setAttribute("style", "display: inline-block;");
+                document.getElementById("button-left").setAttribute("style", "display: none;");
+                document.getElementById("button-right").setAttribute("style", "display: none;");
+            }
+
+            function getRandomInt() {
+                return Math.floor( Math.random() * 2 );
+            }
+        </script>
+        <style media="screen">
+            body {
+                display: flex;
+                justify-content: center;
+            }
+
+            .step {
+                display: flex;
+                justify-content: space-around;
+                width: 140px;
+                height: 30px;
+                border: 1px solid black;
+                margin-bottom: 4px;
+            }
+
+            .plate {
+                width: 40px;
+                height: 30px;
+                background-color: gray;
+            }
+
+            .plate.broken {
+                background-color: white;
+            }
+
+            .plate.current-position {
+                background-color: lightblue;
+            }
+
+            #controls, #status {
+                width: 140px;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="game">
+            <div id="steps"></div>
+            <div id="controls">
+                <button id="button-init" onclick="javascript:init()">Begin game</button>
+                <button id="button-left" style="display: none;" onclick="javascript:progress('left');">Go left</button>
+                <button id="button-right" style="display: none;" onclick="javascript:progress('right');">Go right</button>
+            </div>
+            <div id="status" style="display: none;">
+                Lives left: <span id="lives">0</span>
+            </div>
+        </div>
+    </body>
+</html>
